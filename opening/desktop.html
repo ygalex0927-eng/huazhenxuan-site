@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>华甄选 · U 启封</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0a0d;color:#f4efe6;font-family:"SF Pro Display","PingFang SC","Helvetica Neue","Noto Sans CJK SC",Arial,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:100vw;height:100vh;overflow:hidden;perspective:1200px}
+
+/* ---------- background language: warm near-black + drifting amber/rust light + hairline ---------- */
+.bg{position:absolute;inset:0;z-index:0;background:radial-gradient(120% 90% at 50% 55%,#17120f 0%,#0d0b0e 55%,#08070a 100%)}
+.orb{position:absolute;border-radius:50%;left:50%;top:50%;pointer-events:none;will-change:transform,opacity}
+.orb.amber{width:58vmax;height:58vmax;margin:-29vmax 0 0 -29vmax;background:radial-gradient(circle,rgba(222,170,96,.62) 0%,rgba(196,110,62,.22) 42%,transparent 70%);filter:blur(60px);opacity:0}
+.orb.rust{width:42vmax;height:42vmax;margin:-21vmax 0 0 -21vmax;background:radial-gradient(circle,rgba(196,84,52,.5) 0%,rgba(120,40,30,.15) 50%,transparent 72%);filter:blur(70px);opacity:0}
+.hair{position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(212,163,90,.0) 8%,rgba(226,180,110,.85) 50%,rgba(212,163,90,0) 92%,transparent);transform:scaleX(0);transform-origin:50% 50%;opacity:.9}
+.grain{position:absolute;inset:-10%;opacity:.07;mix-blend-mode:overlay;pointer-events:none;background-size:240px 240px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);pointer-events:none}
+
+/* ---------- chrome (C type language: tiny uppercase, wide tracking) ---------- */
+.chrome{position:absolute;inset:0;z-index:40;pointer-events:none;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:rgba(244,239,230,.5);opacity:0}
+.chrome .tl{position:absolute;top:26px;left:30px}
+.chrome .bl{position:absolute;bottom:26px;left:30px}
+.chrome .br{position:absolute;bottom:26px;right:30px}
+.chrome .bar{position:absolute;bottom:30px;left:50%;width:180px;margin-left:-90px;height:1px;background:rgba(244,239,230,.15)}
+.chrome .bar i{position:absolute;left:0;top:0;height:1px;width:100%;background:#d4a35a;transform:scaleX(0);transform-origin:0 50%}
+.sc{position:relative;display:inline-block;width:9em;height:1.3em;overflow:hidden;vertical-align:bottom}
+.sc b{position:absolute;left:0;top:0;font-weight:400;opacity:0}
+
+.cam{position:absolute;inset:0;z-index:10;will-change:transform}
+.layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+
+/* ---------- scene 1: sealed brief card + cursor ---------- */
+.env{position:absolute;left:50%;top:50%;width:640px;height:370px;margin:-185px 0 0 -320px;transform-style:preserve-3d}
+.half{position:absolute;inset:0;border-radius:16px;border:1px solid rgba(226,180,110,.45);background:linear-gradient(160deg,rgba(40,32,26,.92),rgba(18,15,14,.95));box-shadow:0 30px 80px rgba(0,0,0,.5);will-change:transform}
+.half.t{clip-path:inset(0 0 50% 0)}
+.half.b{clip-path:inset(50% 0 0 0)}
+.half .k{position:absolute;top:30px;left:36px;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:rgba(226,180,110,.75)}
+.half .n{position:absolute;top:30px;right:36px;font-size:12px;letter-spacing:.32em;color:rgba(244,239,230,.4)}
+.half h3{position:absolute;left:36px;top:74px;font-size:42px;font-weight:900;letter-spacing:-.01em;line-height:1.1}
+.half h3 em{font-style:normal;color:#e2b46e}
+.half .en{position:absolute;left:36px;bottom:34px;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:rgba(244,239,230,.5)}
+.half .ln{position:absolute;left:36px;right:36px;top:50%;height:1px;background:rgba(226,180,110,.25)}
+.seal{position:absolute;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;z-index:3;
+  background:radial-gradient(circle at 35% 30%,#e0795a,#b4462e 55%,#7d2a1c);box-shadow:0 8px 24px rgba(120,30,15,.55),inset 0 -4px 10px rgba(0,0,0,.35),inset 0 3px 6px rgba(255,200,170,.35);
+  display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;color:#fbe9dc;letter-spacing:0}
+.seal::after{content:"";position:absolute;inset:7px;border-radius:50%;border:1px dashed rgba(255,225,205,.45)}
+.halo{position:absolute;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;box-shadow:0 0 0 0 rgba(226,180,110,.0);z-index:2}
+.ring{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:1.5px solid rgba(240,200,140,.9);opacity:0;z-index:4}
+.frag{position:absolute;left:50%;top:50%;width:14px;height:10px;margin:-5px 0 0 -7px;background:#c4553a;border-radius:3px;opacity:0;z-index:4}
+.cursor{position:absolute;left:50%;top:50%;width:42px;height:42px;z-index:30;pointer-events:none;will-change:transform;filter:drop-shadow(0 6px 10px rgba(0,0,0,.55))}
+.cursor svg{position:absolute;left:0;top:0;width:42px;height:42px}
+.cursor .hand{opacity:0}
+
+/* ---------- scene 2: impact ---------- */
+.slab{position:absolute;left:50%;top:50%;will-change:transform}
+.slab.s1{width:46vw;height:24vh;margin:-12vh 0 0 -23vw;background:linear-gradient(120deg,#e0b46e,#c9944e)}
+.slab.s2{width:38vw;height:22vh;margin:-11vh 0 0 -19vw;background:linear-gradient(120deg,#d0603f,#a8402a)}
+.slab.s3{width:80vw;height:1.3vh;margin:-.65vh 0 0 -40vw;background:#f4efe6}
+.word{position:absolute;left:0;right:0;top:50%;text-align:center;transform:translateY(-50%);mix-blend-mode:difference;color:#f4efe6;z-index:5}
+.big{display:block;font-size:15vw;font-weight:900;letter-spacing:-.04em;line-height:.9;text-transform:uppercase;white-space:nowrap}
+.big span{display:inline-block;will-change:transform}
+.cn{display:block;margin-top:.5em;font-size:2.2vw;font-weight:700;letter-spacing:.22em;text-transform:none}
+.flash{position:absolute;inset:0;background:#fff3df;opacity:0;z-index:20;pointer-events:none;mix-blend-mode:screen}
+.speed{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(244,239,230,.75),transparent);opacity:0}
+
+/* ---------- scene 3: slow statement ---------- */
+.stmt{position:absolute;left:12vw;top:50%;transform:translateY(-50%)}
+.stmt .row{overflow:hidden;display:block}
+.stmt .row span{display:block;font-weight:900;letter-spacing:-.02em;line-height:1.08;font-size:6.4vw}
+.stmt .row span em{font-style:normal;color:#e2b46e}
+.stmt .sub{white-space:nowrap;margin-top:30px;font-size:14px;letter-spacing:.38em;text-transform:uppercase;color:rgba(244,239,230,.55)}
+.stmt .row.sub span{display:block;font-size:14px;font-weight:400;letter-spacing:.38em;line-height:1.4}
+.idx{position:absolute;right:12vw;top:50%;transform:translateY(-50%);font-size:10vw;font-weight:900;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1px rgba(226,180,110,.45)}
+
+/* ---------- scene 4: category tiles ---------- */
+.grid{position:absolute;left:50%;top:50%;width:62vw;height:52vh;margin:-26vh 0 0 -31vw;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;perspective:900px}
+.tile{position:relative;border:1px solid rgba(226,180,110,.4);border-radius:14px;background:linear-gradient(150deg,rgba(255,240,220,.07),rgba(255,240,220,.02));padding:22px 24px;opacity:0;transform-style:preserve-3d;will-change:transform}
+.tile .no{font-size:12px;letter-spacing:.32em;color:rgba(226,180,110,.8)}
+.tile h4{margin-top:7vh;font-size:3vw;font-weight:900;letter-spacing:.06em}
+.tile p{margin-top:10px;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:rgba(244,239,230,.5)}
+.tile.hot{background:linear-gradient(150deg,#d9a862,#b9773f);color:#16110d;border-color:transparent}
+.tile.hot .no,.tile.hot p{color:rgba(22,17,13,.65)}
+
+/* ---------- scene 5: brand ---------- */
+.brand{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center}
+.brand h1{position:relative;display:inline-block;font-size:9.5vw;font-weight:900;letter-spacing:.1em;line-height:1;padding-left:.1em}
+.brand h1 .glint{position:absolute;left:0;top:0;right:0;bottom:0;padding-left:.1em;color:transparent;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,246,228,.95) 50%,transparent 60%);background-size:250% 100%;background-position:120% 0;-webkit-background-clip:text;background-clip:text}
+.brand h1 em{font-style:normal;color:#e2b46e}
+.brand .uline{width:34vw;height:1px;margin:3.2vh auto 0;background:linear-gradient(90deg,transparent,#e2b46e,transparent);transform:scaleX(0)}
+.brand p{margin-top:2.4vh;font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:rgba(244,239,230,.55)}
+
+/* ---------- login ---------- */
+.login{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none}
+.login.on{pointer-events:auto}
+.card{width:min(92vw,440px);padding:34px 32px;border-radius:20px;background:rgba(24,20,18,.72);border:1px solid rgba(226,180,110,.28);backdrop-filter:blur(18px);box-shadow:0 40px 100px rgba(0,0,0,.55)}
+.card h2{font-size:26px;font-weight:900;letter-spacing:.1em}.card h2 em{font-style:normal;color:#e2b46e}
+.card .sub{margin:6px 0 24px;font-size:12px;letter-spacing:.14em;line-height:1.7;color:rgba(244,239,230,.5)}
+.card label{display:block;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,239,230,.45);margin-bottom:7px}
+.card input{width:100%;margin-bottom:16px;padding:13px 14px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;outline:none;font-family:inherit}
+.card input:focus{border-color:#e2b46e}
+.card .btn{width:100%;margin-top:4px;padding:15px;border:none;border-radius:12px;cursor:pointer;background:linear-gradient(90deg,#e2b46e,#c4553a);color:#160f0b;font-weight:800;letter-spacing:.24em;text-transform:uppercase;font-size:12px;font-family:inherit}
+.card .ft{margin-top:16px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(244,239,230,.35);text-align:center}
+.toast{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);padding:11px 20px;border-radius:999px;border:1px solid #e2b46e;color:#e2b46e;background:rgba(20,16,14,.8);font-size:12px;letter-spacing:.14em;opacity:0;z-index:90;transition:opacity .3s}
+.toast.show{opacity:1}
+
+.btns{position:absolute;top:20px;right:22px;z-index:80;display:flex;gap:10px}
+.btns button{padding:8px 15px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(244,239,230,.3);background:rgba(11,10,13,.5);color:#f4efe6;backdrop-filter:blur(8px);border-radius:999px;font-family:inherit}
+.btns button:hover{background:#f4efe6;color:#0b0a0d}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="bg" id="bg">
+    <div class="orb amber" id="oA"></div>
+    <div class="orb rust" id="oR"></div>
+    <div class="hair" id="hair"></div>
+    <div class="grain" id="grain"></div>
+    <div class="vig"></div>
+  </div>
+
+  <div class="cam" id="cam">
+    <!-- scene 1 -->
+    <div class="layer" id="sc1">
+      <div class="env" id="env">
+        <div class="half t" id="hT"><div class="k">Gift Brief · 2027</div><div class="n">No. 0917</div><h3>开启贵司的<br><em>年度礼赠</em></h3><div class="ln"></div><div class="en">Break the seal to begin</div></div>
+        <div class="half b" id="hB"><div class="k">Gift Brief · 2027</div><div class="n">No. 0917</div><h3>开启贵司的<br><em>年度礼赠</em></h3><div class="ln"></div><div class="en">Break the seal to begin</div></div>
+        <div class="halo" id="halo"></div>
+        <div class="seal" id="seal">甄</div>
+      </div>
+      <div class="ring" id="r1"></div><div class="ring" id="r2"></div><div class="ring" id="r3"></div>
+      <div class="frag"></div><div class="frag"></div><div class="frag"></div><div class="frag"></div><div class="frag"></div><div class="frag"></div><div class="frag"></div><div class="frag"></div>
+    </div>
+
+    <!-- scene 2 -->
+    <div class="layer" id="sc2">
+      <div class="speed" style="top:31%"></div><div class="speed" style="top:44%"></div><div class="speed" style="top:58%"></div><div class="speed" style="top:71%"></div>
+      <div class="slab s1" id="s1"></div>
+      <div class="slab s2" id="s2"></div>
+      <div class="slab s3" id="s3"></div>
+      <div class="word" id="wA"><span class="big" id="bigA">Bespoke</span><span class="cn">专属定制 · 为企业而做</span></div>
+      <div class="word" id="wB"><span class="big" id="bigB">Gifting</span><span class="cn">企业礼赠 · 一次到位</span></div>
+    </div>
+
+    <!-- scene 3 -->
+    <div class="layer" id="sc3">
+      <div class="stmt" id="stmt">
+        <div class="row"><span>每一份礼物</span></div>
+        <div class="row"><span>都在替<em>品牌</em>说话</span></div>
+        <div class="sub row"><span>Every gift speaks for your brand</span></div>
+      </div>
+      <div class="idx" id="idx">01</div>
+    </div>
+
+    <!-- scene 4 -->
+    <div class="layer" id="sc4">
+      <div class="grid" id="grid">
+        <div class="tile"><div class="no">01</div><h4>茶器</h4><p>Tea Ware</p></div>
+        <div class="tile"><div class="no">02</div><h4>文具</h4><p>Desk Set</p></div>
+        <div class="tile hot"><div class="no">03</div><h4>礼盒</h4><p>Gift Box</p></div>
+        <div class="tile"><div class="no">04</div><h4>香氛</h4><p>Scent</p></div>
+        <div class="tile"><div class="no">05</div><h4>皮具</h4><p>Leather</p></div>
+        <div class="tile"><div class="no">06</div><h4>酒具</h4><p>Bar Ware</p></div>
+      </div>
+    </div>
+
+    <!-- scene 5 -->
+    <div class="layer" id="sc5">
+      <div class="brand" id="brand">
+        <h1 id="bh">华<em>甄</em>选<span class="glint" id="glint">华甄选</span></h1>
+        <div class="uline" id="uline"></div>
+        <p id="bp">Huazhenxuan · Bespoke Corporate Gifts</p>
+      </div>
+    </div>
+
+    <div class="flash" id="flash"></div>
+
+    <div class="cursor" id="cursor">
+      <svg class="arrow" viewBox="0 0 30 30"><path d="M3 2 L3 24 L9 18.5 L13 27 L17 25.2 L13 16.8 L21 16.8 Z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <svg class="hand" viewBox="0 0 30 30"><path d="M11 3.5c1.3 0 2.2 1 2.2 2.2v7.1l.1-1.2c.2-1.1 1.1-1.8 2.2-1.7 1.1.1 1.9 1 1.9 2.1v.7c.3-.9 1.2-1.4 2.2-1.3 1.1.1 1.9 1.1 1.8 2.2v.9c.3-.7 1.1-1.2 2-1.1 1 .1 1.8 1 1.8 2v5.8c0 4.2-3.2 7.3-7.3 7.3h-2.1c-2.3 0-4.4-1.1-5.8-2.9l-4.2-5.6c-.7-.9-.5-2.2.4-2.9.9-.7 2.1-.5 2.8.3l1.7 2V5.7c0-1.2 1-2.2 2.3-2.2z" fill="#fff" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <div class="chrome" id="chrome">
+    <div class="tl">Huazhenxuan — Opening U</div>
+    <div class="bl">Scene <span class="sc"><b>01 / 05</b><b>02 / 05</b><b>03 / 05</b><b>04 / 05</b><b>05 / 05</b></span></div>
+    <div class="br">Bespoke Corporate Gifts</div>
+    <div class="bar"><i id="prog"></i></div>
+  </div>
+
+  <div class="login" id="login">
+    <form class="card" id="form">
+      <h2>华<em>甄</em>选</h2>
+      <div class="sub">深圳市华甄选礼品有限公司<br>企业礼品定制 · 产品基础工作台</div>
+      <label for="acc">账号 Account</label>
+      <input id="acc" type="text" value="admin" placeholder="admin" autocomplete="username">
+      <label for="pwd">密码 Password</label>
+      <input id="pwd" type="password" placeholder="admin" autocomplete="current-password">
+      <button class="btn" type="submit">进入工作台</button>
+      <div class="ft">本地演示 admin / admin</div>
+    </form>
+  </div>
+  <div class="toast" id="toast">正在进入工作台…</div>
+
+  <div class="btns" id="btns">
+    <button type="button" id="skip">跳过</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+  /* ================= cue list (shared by WebAudio + offline mix) ================= */
+  const CUES=[
+    {t:0.10,type:'air',    label:'bed + cursor enters'},
+    {t:0.82,type:'hover',  label:'hover seal, arrow→hand'},
+    {t:1.00,type:'click',  label:'mouse click on seal'},
+    {t:1.25,type:'whoosh', label:'card splits open'},
+    {t:1.55,type:'impact', label:'BESPOKE slams in'},
+    {t:1.97,type:'slam',   label:'gold + rust slabs collide'},
+    {t:2.07,type:'slam2',  label:'ivory bar locks'},
+    {t:2.50,type:'flip',   label:'BESPOKE→GIFTING flip'},
+    {t:2.90,type:'whoosh', label:'zoom-through exit'},
+    {t:3.20,type:'swell',  label:'slow statement rises'},
+    {t:5.20,type:'whip',   label:'statement whips out'},
+    {t:5.48,type:'tick',   label:'tile 1'},{t:5.55,type:'tick',label:'tile 2'},{t:5.62,type:'tick',label:'tile 3'},
+    {t:5.69,type:'tick',   label:'tile 4'},{t:5.76,type:'tick',label:'tile 5'},{t:5.83,type:'tick',label:'tile 6'},
+    {t:6.35,type:'riser',  label:'tiles converge (riser to 6.85)'},
+    {t:6.85,type:'brand',  label:'华甄选 brand hit + flash'},
+    {t:7.70,type:'glint',  label:'glint sweep across brand'},
+    {t:9.50,type:'login',  label:'login card appears: woosh 9.50 → glass chime E5 9.80 / A5 9.93'}
+  ];
+  window.__CUES=CUES;
+  window.__LOGIN_FULL=11.20;
+
+  /* ================= Audio: removed (silent final) ================= */
+  let soundOn=false;
+  function bedPlayFrom(t){}
+  function bedPause(){}
+  function play(type){ /* no WebAudio oneshots — bed is the full mix */ }
+
+  /* ================= setup ================= */
+  const cam=$('#cam'), cursor=$('#cursor'), arrow=$('.cursor .arrow'), hand=$('.cursor .hand');
+  const login=$('#login'), chrome=$('#chrome'), btns=$('#btns'), skip=$('#skip');
+  const scBits=$$('.sc b'), frags=$$('.frag'), speeds=$$('.speed'), tiles=$$('.tile');
+  const splitChars=el=>{const t=el.textContent;el.innerHTML=[...t].map(c=>'<span>'+c+'</span>').join('');return [...el.children];};
+  const charsA=splitChars($('#bigA')), charsB=splitChars($('#bigB'));
+
+  gsap.set(['#sc2','#sc3','#sc4','#sc5'],{autoAlpha:0});
+  gsap.set(cursor,{x:640,y:470,opacity:0});
+  gsap.set('#s1',{x:'-110vw',y:'-34vh',rotation:-14,skewX:-16});
+  gsap.set('#s2',{x:'110vw',y:'36vh',rotation:12,skewX:-16});
+  gsap.set('#s3',{x:'-120vw',y:0,rotation:-5});
+  gsap.set('#wA',{clipPath:'inset(50% 0% 50% 0%)'});
+  gsap.set(charsB,{yPercent:110,rotationX:-80,opacity:0});
+  gsap.set('#wB',{opacity:1});
+  gsap.set('#wB .cn',{opacity:0});
+  gsap.set('.stmt .row span',{yPercent:110});
+  gsap.set(tiles,{rotationY:-95,z:-200,opacity:0});
+  gsap.set(scBits[0],{opacity:1});
+
+  // grain flicker (independent loop, deterministic on seek)
+  gsap.to('#grain',{x:'+=37',y:'-=23',duration:.5,repeat:-1,ease:'steps(8)'});
+
+  const tl=gsap.timeline({defaults:{ease:'power3.out'}});
+  window.__TL=tl;
+  CUES.forEach(c=>tl.call(play,[c.type],c.t));
+  tl.call(()=>{ if(soundOn) bedPlayFrom(0); },null,0);
+  const scene=(i,t)=>{tl.to(scBits,{opacity:0,duration:.01},t).to(scBits[i],{opacity:1,duration:.01},t+.01)};
+
+  /* ---- background language runs across the whole piece ---- */
+  tl.to('#oA',{opacity:.55,scale:1,duration:1.2,ease:'power2.out'},0)
+    .fromTo('#oA',{x:'-14vw',y:'4vh'},{x:'10vw',y:'-2vh',duration:2.8,ease:'sine.inOut'},0)
+    .to('#oR',{opacity:.45,duration:1.4,ease:'power2.out'},0.2)
+    .fromTo('#oR',{x:'22vw',y:'14vh'},{x:'-8vw',y:'8vh',duration:3.4,ease:'sine.inOut'},0.2)
+    .to('#hair',{scaleX:1,duration:.9,ease:'expo.out'},0.25)
+    .to(chrome,{opacity:1,duration:.5},0.15)
+    .to('#prog',{scaleX:1,duration:11.20,ease:'none'},0);
+
+  /* ---- S1  sealed brief + cursor click (0.00 – 1.75) ---- */
+  tl.fromTo('#env',{y:60,rotationX:38,scale:.86,opacity:0},{y:0,rotationX:0,scale:1,opacity:1,duration:.75,ease:'expo.out'},0)
+    .fromTo('#seal',{scale:0,rotation:-90},{scale:1,rotation:0,duration:.55,ease:'back.out(2.2)'},0.25)
+    .to(cursor,{opacity:1,duration:.15},0.1)
+    .to(cursor,{x:4,duration:.72,ease:'power3.out'},0.1)
+    .to(cursor,{y:6,duration:.72,ease:'power2.inOut'},0.1)
+    .to(cursor,{rotation:-8,duration:.36,ease:'sine.out'},0.1).to(cursor,{rotation:0,duration:.36,ease:'sine.in'},0.46)
+    // hover
+    .to(arrow,{opacity:0,duration:.06},0.82).to(hand,{opacity:1,duration:.06},0.82)
+    .to('#seal',{scale:1.08,y:-3,duration:.16,ease:'power2.out'},0.82)
+    .to('#halo',{boxShadow:'0 0 0 10px rgba(226,180,110,.18)',duration:.16},0.82)
+    .to('#env',{rotationX:-4,rotationY:3,duration:.3,ease:'power2.out'},0.82)
+    // press
+    .to(cursor,{scale:.78,duration:.07,ease:'power2.in'},0.96)
+    .to('#seal',{scale:.86,y:2,duration:.07,ease:'power2.in'},0.96)
+    .to('#halo',{boxShadow:'0 0 0 2px rgba(226,180,110,.5)',duration:.07},0.96)
+    .to(cursor,{scale:1,duration:.12,ease:'back.out(3)'},1.03)
+    // ripples + brief hold on cracked seal before envelope flies
+    .fromTo('#r1',{scale:.6,opacity:.95},{scale:5.5,opacity:0,duration:.7,ease:'expo.out'},1.0)
+    .fromTo('#r2',{scale:.6,opacity:.7},{scale:9,opacity:0,duration:.85,ease:'expo.out'},1.06)
+    .fromTo('#r3',{scale:.6,opacity:.5},{scale:14,opacity:0,duration:1.0,ease:'expo.out'},1.12)
+    .to('#seal',{scale:1.12,y:-1,duration:.18,ease:'power2.out'},1.04)
+    .to('#halo',{boxShadow:'0 0 0 14px rgba(226,180,110,.22)',duration:.2},1.04)
+    // seal breaks + envelope split (held ~0.2s after click)
+    .to('#seal',{scale:1.35,opacity:0,duration:.16,ease:'power2.out'},1.22)
+    .to('#halo',{opacity:0,duration:.1},1.22);
+  frags.forEach((f,i)=>{const a=i/frags.length*Math.PI*2+.3;
+    tl.fromTo(f,{x:0,y:0,rotation:0,opacity:1,scale:1},{immediateRender:false,x:Math.cos(a)*(170+i%3*60),y:Math.sin(a)*(130+i%2*70),rotation:(i%2?1:-1)*260,scale:.4,opacity:0,duration:.55,ease:'power3.out'},1.22);});
+  tl.to('#hT',{y:'-62vh',rotationX:24,duration:.32,ease:'power3.in'},1.25)
+    .to('#hB',{y:'62vh',rotationX:-24,duration:.32,ease:'power3.in'},1.25)
+    .to(cursor,{y:120,x:60,opacity:0,duration:.3,ease:'power2.in'},1.30)
+    .to('#hair',{scaleY:3,opacity:1,duration:.1},1.25).to('#hair',{scaleY:1,opacity:.6,duration:.4},1.38)
+    .set('#sc1',{autoAlpha:0},1.72);
+
+  /* ---- S2  impact (1.50 – 3.25): slam then hold before flip ---- */
+  scene(1,1.50);
+  tl.set('#sc2',{autoAlpha:1},1.48)
+    .to('#wA',{clipPath:'inset(0% 0% 0% 0%)',duration:.3,ease:'expo.out'},1.55)
+    .fromTo('#bigA',{scale:1.75,letterSpacing:'.08em'},{scale:1,letterSpacing:'-.04em',duration:.55,ease:'expo.out'},1.55)
+    .fromTo('#wA .cn',{opacity:0,y:18},{opacity:1,y:0,duration:.35},1.65)
+    .fromTo(speeds,{xPercent:-100,opacity:0},{xPercent:100,opacity:.8,duration:.3,stagger:.03,ease:'power2.out'},1.53)
+    .to(speeds,{opacity:0,duration:.15},1.85)
+    .to('#oA',{scale:1.25,opacity:.8,duration:.3,ease:'power2.out'},1.55)
+    .to('#s1',{x:'-15vw',y:'-13vh',rotation:-3,duration:.22,ease:'power4.in'},1.75)
+    .to('#s2',{x:'15vw',y:'12vh',rotation:2,duration:.22,ease:'power4.in'},1.77)
+    .to('#s3',{x:0,rotation:-3,duration:.22,ease:'power4.in'},1.85)
+    .set('#flash',{opacity:.45},1.97).to('#flash',{opacity:0,duration:.14,ease:'power2.out'},1.975)
+    .to(cam,{keyframes:[{x:-16,y:8,rotation:-.5,duration:.035},{x:13,y:-7,rotation:.4,duration:.035},{x:-8,y:5,rotation:-.2,duration:.04},{x:5,y:-2,rotation:0,duration:.045},{x:0,y:0,duration:.05}]},1.97)
+    .to('#s1',{x:'-13vw',duration:.32,ease:'power1.out'},1.97)
+    .to('#s2',{x:'13vw',duration:.32,ease:'power1.out'},1.99)
+    .fromTo('#s3',{scaleY:1},{scaleY:2.4,duration:.06,yoyo:true,repeat:1},2.07)
+    // HOLD composition ~0.4s before flip
+    .to(charsA,{yPercent:-110,rotationX:80,opacity:0,duration:.14,stagger:.012,ease:'power3.in'},2.40)
+    .to('#wA .cn',{opacity:0,duration:.12},2.42)
+    .to(charsB,{yPercent:0,rotationX:0,opacity:1,duration:.3,stagger:.02,ease:'back.out(1.8)'},2.50)
+    .to('#wB .cn',{opacity:1,duration:.2},2.56)
+    .to('#s1',{x:'12vw',y:'-12vh',rotation:4,duration:.26,ease:'expo.inOut'},2.48)
+    .to('#s2',{x:'-13vw',y:'12vh',rotation:-3,duration:.26,ease:'expo.inOut'},2.48)
+    // HOLD GIFTING ~0.3s then zoom out
+    .to('#sc2',{scale:3.2,filter:'blur(18px)',opacity:0,duration:.34,ease:'power3.in'},2.90)
+    .set('#sc2',{autoAlpha:0},3.25);
+
+  /* ---- S3  slow statement (3.15 – 5.55): long read hold ---- */
+  scene(2,3.15);
+  tl.set('#sc3',{autoAlpha:1},3.15)
+    .to('.stmt .row span',{yPercent:0,duration:1.05,stagger:.18,ease:'expo.out'},3.18)
+    .fromTo('#stmt',{scale:1.06,x:0},{scale:1,x:'1.5vw',duration:2.0,ease:'sine.out'},3.18)
+    .fromTo('#idx',{opacity:0,x:'6vw'},{opacity:1,x:0,duration:1.2,ease:'expo.out'},3.35)
+    .to('#oA',{x:'-18vw',y:'6vh',scale:1.05,opacity:.6,duration:2.0,ease:'sine.inOut'},3.15)
+    .to('#oR',{x:'24vw',y:'-6vh',duration:2.0,ease:'sine.inOut'},3.15)
+    .to('#hair',{opacity:.25,duration:.6},3.15)
+    .to('#stmt',{x:'-62vw',skewX:14,filter:'blur(10px)',duration:.3,ease:'power3.in'},5.20)
+    .to('#idx',{x:'-90vw',skewX:14,filter:'blur(8px)',duration:.3,ease:'power3.in'},5.23)
+    .to('#oA',{x:'14vw',duration:.4,ease:'power3.inOut'},5.20)
+    .set('#sc3',{autoAlpha:0},5.55);
+
+  /* ---- S4  tiles (5.40 – 6.85): hold grid before converge ---- */
+  scene(3,5.40);
+  tl.set('#sc4',{autoAlpha:1},5.40);
+  const order=[2,1,3,5,0,4];
+  order.forEach((ti,k)=>{
+    tl.to(tiles[ti],{rotationY:0,z:0,opacity:1,duration:.38,ease:'back.out(1.5)'},5.42+k*.07);
+  });
+  tl.fromTo('#grid',{scale:.94},{scale:1.03,duration:1.0,ease:'sine.out'},5.42);
+  // converge after hold
+  tiles.forEach((t,i)=>{const col=i%3,row=Math.floor(i/3);
+    tl.to(t,{x:(1-col)*window.innerWidth*.21,y:(row?-1:1)*window.innerHeight*.135,rotation:(i%2?8:-8),scale:.25,opacity:0,duration:.38,ease:'power4.in'},6.40+i*.012);
+  });
+  tl.to('#oA',{x:0,y:0,scale:.6,opacity:.9,duration:.45,ease:'power3.in'},6.35)
+    .to('#oR',{x:0,y:0,scale:.5,duration:.45,ease:'power3.in'},6.35)
+    .set('#sc4',{autoAlpha:0},6.85);
+
+  /* ---- S5  brand lockup (6.80 – 9.55): longer settle ---- */
+  scene(4,6.80);
+  tl.set('#sc5',{autoAlpha:1},6.80)
+    .set('#flash',{opacity:.3},6.85).to('#flash',{opacity:0,duration:.2,ease:'power2.out'},6.855)
+    .to('#oA',{scale:1.35,opacity:.7,duration:.9,ease:'expo.out'},6.85)
+    .to('#oR',{scale:1.1,x:'6vw',y:'10vh',opacity:.35,duration:1.2,ease:'expo.out'},6.85)
+    .fromTo('#bh',{letterSpacing:'.7em',filter:'blur(16px)',scale:1.2,opacity:0},{letterSpacing:'.1em',filter:'blur(0px)',scale:1,opacity:1,duration:.7,ease:'expo.out'},6.85)
+    .to('#uline',{scaleX:1,duration:.8,ease:'expo.out'},7.00)
+    .fromTo('#bp',{opacity:0,letterSpacing:'.8em'},{opacity:1,letterSpacing:'.38em',duration:.9,ease:'expo.out'},7.10)
+    .to('#hair',{opacity:0,duration:.4},6.85)
+    .fromTo('#brand',{scale:1},{scale:1.06,duration:2.6,ease:'none'},6.85)
+    .to('#glint',{backgroundPosition:'-120% 0',duration:.75,ease:'power2.inOut'},7.70)
+    .to(cam,{keyframes:[{y:5,duration:.03},{y:-4,duration:.03},{y:0,duration:.05}]},6.85);
+
+  /* ---- outro → login (9.55 – 11.20), background persists ---- */
+  tl.to('#brand',{y:'-6vh',scale:.9,filter:'blur(12px)',opacity:0,duration:.5,ease:'power3.in'},9.55)
+    .to(chrome,{opacity:0,duration:.3},9.55)
+    .to(btns,{opacity:0,duration:.25},9.55)
+    .to('#oA',{scale:1,x:'-6vw',y:'-4vh',opacity:.42,duration:1.0,ease:'sine.inOut'},9.55)
+    .to('#oR',{opacity:.3,duration:1.0},9.55)
+    .fromTo(login,{opacity:0},{opacity:1,duration:.35,ease:'power2.out'},9.70)
+    .fromTo('#form',{y:40,scale:.96,filter:'blur(10px)'},{y:0,scale:1,filter:'blur(0px)',duration:.6,ease:'expo.out'},9.70)
+    .call(finish,[],11.20);
+
+  function finish(){
+    gsap.set([cam,chrome],{display:'none'});
+    btns.style.display='none';
+    login.classList.add('on');
+  }
+  
+
+  function enterWorkbench(){
+    try{sessionStorage.setItem('hzx-opening-seen','1')}catch(e){}
+    // Land on React workbench — not MotionReel home
+    location.replace('/#/catalog');
+  }
+
+  function showToast(msg, isErr){
+    var t = $('#toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.borderColor = isErr ? '#c4553a' : '#e2b46e';
+    t.style.color = isErr ? '#f0a090' : '#e2b46e';
+    t.style.opacity = '1';
+    clearTimeout(showToast._tm);
+    showToast._tm = setTimeout(function(){ t.style.opacity = '0'; }, isErr ? 3200 : 1600);
+  }
+
+  async function loginAndEnter(){
+    var acc = $('#acc');
+    var pwd = $('#pwd');
+    var btn = $('#form button[type=submit]');
+    var username = (acc && acc.value || '').trim() || 'admin';
+    var password = (pwd && pwd.value || '');
+    if (!password) {
+      showToast('请输入密码', true);
+      if (pwd) pwd.focus();
+      return;
+    }
+    if (btn) { btn.disabled = true; btn.textContent = '验证中…'; }
+    try {
+      var res = await fetch('/api/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      });
+      var data = {};
+      try { data = await res.json(); } catch (e) {}
+      if (!res.ok) {
+        showToast((data && data.error) || '账号或密码不对', true);
+        return;
+      }
+      showToast('正在进入工作台…', false);
+      enterWorkbench();
+    } catch (err) {
+      showToast('网络错误，请确认服务已启动', true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '进入工作台'; }
+    }
+  }
+
+  skip.onclick=()=>{enterWorkbench();};
+
+  $('#form').onsubmit=e=>{e.preventDefault(); loginAndEnter();};
+
+  // Prefill local demo account
+  try {
+    var accEl = $('#acc');
+    if (accEl && !accEl.value) accEl.value = 'admin';
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

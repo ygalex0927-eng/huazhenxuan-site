@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华甄选 · 开场</title>
+  <script>
+  (function () {
+    // Opening must NOT redirect to the SPA until the user clicks 进入/跳过
+    // (handled in desktop.html / mobile.html enterWorkbench). No session skip here —
+    // that was bouncing /opening/ → /#/catalog → / → /opening/ in a loop.
+    var force = /(?:^|[?&])force=1(?:&|$)/.test(location.search);
+    if (force) {
+      try { sessionStorage.removeItem("hzx-opening-seen"); } catch (e) {}
+    }
+    var ua = navigator.userAgent || "";
+    var mobile = /Android|iPhone|iPod|iPad|Mobile|Windows Phone/i.test(ua)
+      || (Math.min(screen.width, screen.height) <= 820 && "ontouchstart" in window)
+      || window.matchMedia("(max-width: 820px)").matches;
+    location.replace(mobile ? "./mobile.html" + location.search : "./desktop.html" + location.search);
+  })();
+  </script>
+</head>
+<body style="margin:0;background:#110e0c;color:#f4efe6;font:14px/1.5 system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh">
+  正在进入华甄选开场…
+</body>
+</html>

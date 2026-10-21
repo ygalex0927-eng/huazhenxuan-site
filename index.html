@@ -1,74 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="华甄选礼品选品目录 · 只读浏览" />
-  <title>华甄选 · 选品目录</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/site.css?v=1" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>華甄選</title>
+    <meta name="theme-color" content="#f3eee5" />
+    <script>
+    try {
+      var q = new URLSearchParams(location.search).get("ui");
+      var theme = "maison";
+      if (q === "v1" || q === "classic") theme = "v1";
+      else if (q === "bvlgari" || q === "quiet" || q === "v2") theme = "bvlgari";
+      document.documentElement.setAttribute("data-ui", theme);
+    } catch (e) {}
+  </script>
+  <script type="module" crossorigin src="/assets/index-Bzrf-qaX.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-GslMKGEp.css">
 </head>
-<body>
-  <header class="top">
-    <div class="top-inner">
-      <a class="brand" href="./">
-        <span class="brand-seal" aria-hidden="true">甄</span>
-        <span class="brand-text">
-          <strong>华甄选</strong>
-          <em>HUA ZHEN XUAN</em>
-        </span>
-      </a>
-      <p class="top-note">只读选品目录 · 零售参考价</p>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <p class="eyebrow">COLLECTION</p>
-      <h1>礼品货盘选品</h1>
-      <p class="lede">浏览品牌与预算档，查看零售参考价。录入与改价请在本地工作台完成。</p>
-    </section>
-
-    <section class="toolbar" aria-label="筛选">
-      <label class="search">
-        <span class="sr">搜索</span>
-        <input id="q" type="search" placeholder="搜品牌 / 品名 / 型号" autocomplete="off" />
-      </label>
-      <div class="chips" id="cat-chips" role="tablist" aria-label="分类"></div>
-      <div class="chips tiers" id="tier-chips" role="tablist" aria-label="预算档"></div>
-      <p class="meta" id="meta">加载中…</p>
-    </section>
-
-    <section class="grid" id="grid" aria-live="polite"></section>
-    <p class="empty" id="empty" hidden>没有符合条件的商品</p>
-  </main>
-
-  <dialog id="drawer" class="drawer">
-    <form method="dialog" class="drawer-panel">
-      <button type="submit" class="drawer-close" aria-label="关闭">×</button>
-      <div class="drawer-media" id="d-media"></div>
-      <div class="drawer-body">
-        <p class="drawer-brand" id="d-brand"></p>
-        <h2 id="d-title"></h2>
-        <p class="drawer-price" id="d-price"></p>
-        <p class="drawer-tier" id="d-tier"></p>
-        <p class="drawer-model" id="d-model"></p>
-        <p class="drawer-spec" id="d-spec"></p>
-        <a class="drawer-link" id="d-link" href="#" target="_blank" rel="noopener" hidden>查看参考链接</a>
-      </div>
-    </form>
-  </dialog>
-
-  <footer class="foot">
-    <div class="foot-inner">
-      <p><strong>深圳市华甄选礼品有限公司</strong></p>
-      <p>本站为只读选品目录，价格为零售参考价，不含供货价。</p>
-      <p class="foot-muted">静态托管 · GitHub Pages</p>
-    </div>
-  </footer>
-
-  <script src="js/app.js?v=1" defer></script>
-</body>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>

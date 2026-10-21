@@ -134,7 +134,7 @@ def export(db: Path) -> None:
                     or d.stat().st_size != s.stat().st_size
                 ):
                     shutil.copy2(s, d)
-                image_url = f"/images/{s.name}"
+                image_url = f"images/{s.name}"
                 image_rel = f"images/{s.name}"
 
         brand = vals_map.get("品牌", "")

@@ -5,8 +5,7 @@ WEB="$(cd "$SITE/../huazhen-catalog/web" && pwd)"
 python3 "$SITE/scripts/export-catalog-api.py"
 mkdir -p "$WEB/public/data"
 cp "$SITE/data/catalog.json" "$WEB/public/data/catalog.json"
-# Do NOT symlink images into public (bloats dist); images stay at site root.
-( cd "$WEB" && VITE_STATIC=1 npm run build )
+( cd "$WEB" && VITE_STATIC=1 VITE_BASE=./ npm run build )
 rsync -a --delete \
   --exclude data --exclude images --exclude CNAME --exclude scripts \
   --exclude qa --exclude .git --exclude README.md --exclude .gitignore \
